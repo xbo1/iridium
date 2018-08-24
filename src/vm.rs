@@ -2,11 +2,11 @@ use instruction::Opcode;
 
 pub struct VM {
     /// Array that simulates having hardware registers
-    registers: [i32;32],
+    pub registers: [i32;32],
     /// Program counter that tracks which byte is being executed
     pc: usize,
     /// The bytecode of the program being run
-    program: Vec<u8>,
+    pub program: Vec<u8>,
     /// Contains the remainder of modulo division ops
     remainder: usize,
     /// Contains the result of the last comparison operation
@@ -36,6 +36,12 @@ impl VM {
     pub fn run_once(&mut self) {
         self.execute_instruction();
     }
+
+    /// Adds an arbitrary byte to the VM's program
+    pub fn add_byte(&mut self, b: u8) {
+        self.program.push(b);
+    }
+
     /// Executes an instruction and returns a bool. Meant to be called by the various public run
     /// functions.
     fn execute_instruction(&mut self) -> bool {
