@@ -214,7 +214,7 @@ mod tests {
     #[test]
     fn test_opcode_hlt() {
       let mut test_vm = VM::new();
-      let test_bytes = vec![6,0,0,0];
+      let test_bytes = vec![5,0,0,0];
       test_vm.program = test_bytes;
       test_vm.run_once();
       assert_eq!(test_vm.pc, 1);
@@ -273,7 +273,7 @@ mod tests {
     fn test_jmp_opcode() {
         let mut test_vm = get_test_vm();
         test_vm.registers[0] = 4;
-        test_vm.program = vec![7, 0, 0, 0];
+        test_vm.program = vec![6, 0, 0, 0];
         test_vm.run_once();
         assert_eq!(test_vm.pc, 4);
     }
@@ -282,7 +282,7 @@ mod tests {
     fn test_jmpf_opcode() {
         let mut test_vm = get_test_vm();
         test_vm.registers[0] = 2;
-        test_vm.program = vec![8, 0, 0, 0, 6, 0, 0, 0];
+        test_vm.program = vec![7, 0, 0, 0, 6, 0, 0, 0];
         test_vm.run_once();
         assert_eq!(test_vm.pc, 4);
     }
@@ -291,7 +291,7 @@ mod tests {
     fn test_jmpb_opcode() {
         let mut test_vm = get_test_vm();
         test_vm.registers[1] = 6;
-        test_vm.program = vec![0, 0, 0, 10, 9, 1, 0, 0];
+        test_vm.program = vec![0, 0, 0, 10, 8, 1, 0, 0];
         test_vm.run_once();
         test_vm.run_once();
         assert_eq!(test_vm.pc, 0);
@@ -302,7 +302,7 @@ mod tests {
         let mut test_vm = get_test_vm();
         test_vm.registers[0] = 10;
         test_vm.registers[1] = 10;
-        test_vm.program = vec![10, 0, 1, 0, 10, 0, 1, 0];
+        test_vm.program = vec![9, 0, 1, 0, 9, 0, 1, 0];
         test_vm.run_once();
         assert_eq!(test_vm.equal_flag, true);
         test_vm.registers[1] = 20;
@@ -315,7 +315,7 @@ mod tests {
         let mut test_vm = get_test_vm();
         test_vm.registers[0] = 10;
         test_vm.registers[1] = 20;
-        test_vm.program = vec![11, 0, 1, 0, 11, 0, 1, 0];
+        test_vm.program = vec![10, 0, 1, 0, 10, 0, 1, 0];
         test_vm.run_once();
         assert_eq!(test_vm.equal_flag, true);
         test_vm.registers[1] = 10;
@@ -328,7 +328,7 @@ mod tests {
         let mut test_vm = get_test_vm();
         test_vm.registers[0] = 20;
         test_vm.registers[1] = 10;
-        test_vm.program = vec![12, 0, 1, 0, 12, 0, 1, 0, 12, 0, 1, 0];
+        test_vm.program = vec![11, 0, 1, 0, 11, 0, 1, 0, 11, 0, 1, 0];
         test_vm.run_once();
         assert_eq!(test_vm.equal_flag, true);
         test_vm.registers[0] = 10;
@@ -344,7 +344,7 @@ mod tests {
         let mut test_vm = get_test_vm();
         test_vm.registers[0] = 20;
         test_vm.registers[1] = 10;
-        test_vm.program = vec![13, 0, 1, 0, 13, 0, 1, 0, 13, 0, 1, 0];
+        test_vm.program = vec![12, 0, 1, 0, 12, 0, 1, 0, 12, 0, 1, 0];
         test_vm.run_once();
         assert_eq!(test_vm.equal_flag, true);
         test_vm.registers[0] = 10;
@@ -360,7 +360,7 @@ mod tests {
         let mut test_vm = get_test_vm();
         test_vm.registers[0] = 20;
         test_vm.registers[1] = 10;
-        test_vm.program = vec![14, 0, 1, 0, 14, 0, 1, 0, 14, 0, 1, 0];
+        test_vm.program = vec![13, 0, 1, 0, 13, 0, 1, 0, 13, 0, 1, 0];
         test_vm.run_once();
         assert_eq!(test_vm.equal_flag, false);
         test_vm.registers[0] = 10;
@@ -376,7 +376,7 @@ mod tests {
         let mut test_vm = get_test_vm();
         test_vm.registers[0] = 20;
         test_vm.registers[1] = 10;
-        test_vm.program = vec![15, 0, 1, 0, 15, 0, 1, 0, 15, 0, 1, 0];
+        test_vm.program = vec![14, 0, 1, 0, 14, 0, 1, 0, 14, 0, 1, 0];
         test_vm.run_once();
         assert_eq!(test_vm.equal_flag, false);
         test_vm.registers[0] = 10;
@@ -392,7 +392,7 @@ mod tests {
         let mut test_vm = get_test_vm();
         test_vm.registers[0] = 7;
         test_vm.equal_flag = true;
-        test_vm.program = vec![16, 0, 0, 0, 17, 0, 0, 0, 17, 0, 0, 0];
+        test_vm.program = vec![15, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0];
         test_vm.run_once();
         assert_eq!(test_vm.pc, 7);
     }
