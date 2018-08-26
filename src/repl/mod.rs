@@ -2,8 +2,11 @@ use std;
 use std::io;
 use std::io::Write;
 use std::num::ParseIntError;
-use vm::VM;
 
+use nom::types::CompleteStr;
+
+use assembler::program_parsers::program;
+use vm::VM;
 /// Core structure for the REPL for the Assembler
 pub struct REPL {
     command_buffer: Vec<String>,
@@ -15,7 +18,7 @@ impl REPL {
     pub fn new() -> REPL {
         REPL {
             vm: VM::new(),
-            command_buffer: vec![]
+            command_buffer: vec![],
         }
     }
 
@@ -37,43 +40,45 @@ impl REPL {
             io::stdout().flush().expect("Unable to flush stdout");
 
             // Here we'll look at the string the user gave us.
-            stdin.read_line(&mut buffer).expect("Unable to read line from user");
+            stdin
+                .read_line(&mut buffer)
+                .expect("Unable to read line from user");
             let buffer = buffer.trim();
             self.command_buffer.push(buffer.to_string());
             match buffer {
                 ".quit" => {
                     println!("Farewell! Have a great day!");
                     std::process::exit(0);
-                },
+                }
                 ".history" => {
                     for command in &self.command_buffer {
                         println!("{}", command);
                     }
-                },
+                }
                 ".program" => {
                     println!("Listing instructions currently in VM's program vector:");
                     for instruction in &self.vm.program {
                         println!("{}", instruction);
                     }
                     println!("End of Program Listing");
-                },
+                }
                 ".registers" => {
                     println!("Listing registers and all contents:");
                     println!("{:#?}", self.vm.registers);
                     println!("End of Register Listing")
-                },
+                }
                 _ => {
-                    let results = self.parse_hex(buffer);
-                    match results {
-                        Ok(bytes) => {
-                            for byte in bytes {
-                                self.vm.add_byte(byte)
-                            }
-                        },
-                        Err(_e) => {
-                            println!("Unable to decode hex string. Please enter 4 groups of 2 hex characters.")
-                        }
-                    };
+                    let parsed_program = program(CompleteStr(buffer));
+                    if !parsed_program.is_ok() {
+                        println!("Unable to parse input");
+                        continue;
+                    }
+                    let (_, result) = parsed_program.unwrap();
+                    let bytecode = result.to_bytes();
+                    // TODO: Make a function to let us add multiple bytes to the VM
+                    for byte in bytecode {
+                        self.vm.add_byte(byte);
+                    }
                     self.vm.run_once();
                 }
             }
@@ -82,7 +87,8 @@ impl REPL {
 
     /// Accepts a hexadecimal string WITHOUT a leading `0x` and returns a Vec of u8
     /// Example for a LOAD command: 00 01 03 E8
-    fn parse_hex(&mut self, i: &str) -> Result<Vec<u8>, ParseIntError>{
+    #[allow(dead_code)]
+    fn parse_hex(&mut self, i: &str) -> Result<Vec<u8>, ParseIntError> {
         let split = i.split(" ").collect::<Vec<&str>>();
         let mut results: Vec<u8> = vec![];
         for hex_string in split {
@@ -90,7 +96,7 @@ impl REPL {
             match byte {
                 Ok(result) => {
                     results.push(result);
-                },
+                }
                 Err(e) => {
                     return Err(e);
                 }

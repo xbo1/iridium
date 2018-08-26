@@ -1,4 +1,6 @@
-#[derive(Debug, PartialEq)]
+/// Represents an opcode, which tells our interpreter what to do with the following operands
+/// Opcodes are a nice way to represent each of our Opcodes
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Opcode {
     LOAD,
     ADD,
@@ -22,15 +24,13 @@ pub enum Opcode {
 
 #[derive(Debug, PartialEq)]
 pub struct Instruction {
-  opcode: Opcode
+    opcode: Opcode,
 }
 
 impl Instruction {
-  pub fn new(opcode: Opcode) -> Instruction {
-    Instruction {
-      opcode: opcode
+    pub fn new(opcode: Opcode) -> Instruction {
+        Instruction { opcode: opcode }
     }
-  }
 }
 
 /// We implement this trait to make it easy to convert from a u8 to an Opcode
@@ -55,7 +55,6 @@ impl From<u8> for Opcode {
             15 => Opcode::JMPE,
             16 => Opcode::NOP,
             _ => Opcode::IGL,
-
         }
     }
 }
@@ -72,7 +71,7 @@ mod tests {
 
     #[test]
     fn test_create_instruction() {
-      let instruction = Instruction::new(Opcode::HLT);
-      assert_eq!(instruction.opcode, Opcode::HLT);
+        let instruction = Instruction::new(Opcode::HLT);
+        assert_eq!(instruction.opcode, Opcode::HLT);
     }
 }
