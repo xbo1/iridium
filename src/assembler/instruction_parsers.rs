@@ -1,3 +1,4 @@
+use nom::multispace;
 use nom::types::CompleteStr;
 use std;
 
@@ -59,10 +60,10 @@ impl AssemblerInstruction {
 }
 
 /// Handles instructions of the following form:
-/// LOAD $0 #100
-named!(pub instruction_one<CompleteStr, AssemblerInstruction>,
+/// <opcode> <register> <integer_operand>
+named!(instruction_one<CompleteStr, AssemblerInstruction>,
     do_parse!(
-        o: opcode_load >>
+        o: opcode >>
         r: register >>
         i: integer_operand >>
         (
@@ -75,6 +76,37 @@ named!(pub instruction_one<CompleteStr, AssemblerInstruction>,
         )
     )
 );
+
+/// Handles instructions of the following form:
+/// <opcode>
+named!(instruction_two<CompleteStr, AssemblerInstruction>,
+    do_parse!(
+        o: opcode >>
+        opt!(multispace) >>
+        (
+            AssemblerInstruction{
+                opcode: o,
+                operand1: None,
+                operand2: None,
+                operand3: None,
+            }
+        )
+    )
+);
+
+/// Will try to parse out any of the Instruction forms
+named!(pub instruction<CompleteStr, AssemblerInstruction>,
+    do_parse!(
+        ins: alt!(
+            instruction_one |
+            instruction_two
+        ) >>
+        (
+            ins
+        )
+    )
+);
+
 
 #[cfg(test)]
 mod tests {
@@ -92,6 +124,23 @@ mod tests {
                     opcode: Token::Op { code: Opcode::LOAD },
                     operand1: Some(Token::Register { reg_num: 0 }),
                     operand2: Some(Token::IntegerOperand { value: 100 }),
+                    operand3: None
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_parse_instruction_form_two() {
+        let result = instruction_two(CompleteStr("hlt\n"));
+        assert_eq!(
+            result,
+            Ok((
+                CompleteStr(""),
+                AssemblerInstruction {
+                    opcode: Token::Op { code: Opcode::HLT },
+                    operand1: None,
+                    operand2: None,
                     operand3: None
                 }
             ))
